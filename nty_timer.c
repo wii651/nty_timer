@@ -87,7 +87,9 @@ void nty_TimerTicks(Timer* timer) {
 				free(minNode);
 				timer->tree_size--;
 
-				task->next_trigger_time += task->interval;
+				do {
+					task->next_trigger_time += task->interval;
+				} while (task->next_trigger_time <= now);		//[ 防止因某次大量延时导致的泄洪执行 ]
 				if (task->rest_loop_count > 1)	//[ rest_loop_count < 0时表示endless-loop, 不用-- ]
 					task->rest_loop_count--;
 				nty_AddTimerTask(timer, task);
